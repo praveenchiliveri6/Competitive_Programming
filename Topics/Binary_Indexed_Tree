@@ -1,0 +1,152 @@
+#include <bits/stdc++.h>
+
+#define f(i,a,b) for(i=a;i<=b;i++)
+
+#define rep(i,n) f(i,0,n)
+
+#define fd(i,a,b) for(i=a;i>=b;i--)
+
+#define pb push_back
+
+#define mp make_pair
+
+#define ss second
+
+#define ff first
+
+#define ll long long
+
+#define mod (1000*1000*1000+7)
+
+#define scan1(x) scanf("%lld",&x)
+
+#define scan2(x,y) scanf("%lld %lld",&x,&y)
+
+#define scan3(x,y,z) scanf("%lld %lld %lld",&x,&y,&z)
+
+#define print(x) printf("%lld\n",x)
+
+#define ff first
+
+#define ss second
+
+using namespace std;
+
+
+
+ll getans(ll BITree[],ll index){
+    
+index++;
+    
+ll ans=0;
+ 
+ while(index>0){
+  
+      ans+=BITree[index];
+   
+     index-=index&(-index);
+    
+}
+   
+ return ans;
+
+}
+
+
+
+void update(ll BITree[],ll n,ll index,ll val){
+   
+ index++;
+   
+ while(index<=n){
+    
+    BITree[index]+=val;
+    
+    index+=index&(-index);
+    
+}
+
+
+}
+
+
+
+bool roundnum(ll n){
+  
+  if(n<0) return 0;
+   
+ ll val1=n%10,val2=n%10;
+  
+  while(n){
+     
+   val2=n%10;
+     
+   n/=10;
+  
+  }
+ 
+   return val1==val2;
+
+}
+
+
+int main(){
+  
+  ll n,q,i,j,ch,l,r;
+   
+ scan2(n,q);
+   
+ ll a[n];
+   
+ f(i,0,n-1) scan1(a[i]);
+  
+  f(i,0,n-1){
+   
+ if(roundnum(a[i]))
+    
+a[i]=1;
+   
+ else
+ a[i]=0;
+  
+  }
+    
+
+ll BITree[n+1]={ };
+ 
+  
+ f(i,0,n-1)
+   
+ update(BITree,n,i,a[i]);
+  
+ /* f(i,0,n)
+    cout<<BITree[i]<<" ";*/
+  
+
+ while(q--){
+     
+   scan3(ch,l,r);
+  
+      if(ch==1)
+      
+   cout<<getans(BITree,r-1)-getans(BITree,l-2)<<endl;
+ 
+       else{
+  
+         
+ update(BITree,n,l-1,-a[l-1]);
+    
+        a[l-1]=roundnum(r);
+      
+      update(BITree,n,l-1,a[l-1]);
+ 
+           
+        
+}
+  
+  }
+    
+ 
+   return 0;
+
+}
