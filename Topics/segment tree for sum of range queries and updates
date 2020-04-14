@@ -1,0 +1,82 @@
+#include <bits/stdc++.h>
+#define f(i,a,b) for(i=a;i<=b;i++)
+#define rep(i,n) f(i,0,n)
+#define fd(i,a,b) for(i=a;i>=b;i--)
+#define pb push_back
+#define mp make_pair
+#define ss second
+#define ff first
+#define ll long long
+#define mod (1000*1000*1000+7)
+#define scan1(x) scanf("%lld",&x)
+#define scan2(x,y) scanf("%lld %lld",&x,&y)
+#define scan3(x,y,z) scanf("%lld %lld %lld",&x,&y,&z)
+#define print(x) printf("%lld\n",x)
+#define ff first
+#define ss second
+using namespace std;
+
+
+void updateutil(ll *bit,ll ss,ll se,ll segindex,ll updateindex,ll updatevalue){
+    //if index to be updated out of segment range.
+    if(updateindex>se||updateindex<ss)
+    return;
+    //update the segment tree node with update value where the updateindex is within segment range.
+    bit[segindex]+=updatevalue;
+    
+    // stop recursion from the child nodes to prevent Segmentation fault.
+    if(ss!=se){
+    ll mid=(ss+se)/2;
+    updateutil(bit,ss,mid,2*segindex+1,updateindex,updatevalue);
+    updateutil(bit,mid+1,se,2*segindex+2,updateindex,updatevalue);
+    }
+}
+
+ll sumofrange(ll *bit,ll ss,ll se,ll qs,ll qe,ll segindex){
+    //segment lies completely inside query.
+    if(qs<=ss&&se<=qe)
+    return bit[segindex];
+    
+    //out of query range.
+    if(se<qs||qe<ss)
+    return 0;
+    
+    ll mid=(ss+se)/2;
+    return sumofrange(bit,ss,mid,qs,qe,2*segindex+1)+
+    sumofrange(bit,mid+1,se,qs,qe,2*segindex+2);
+    
+}
+
+
+void buildtree(ll *bit,ll *arr,ll segindex,ll ss,ll se){
+    //root node of segment tree.
+    if(ss==se){
+    bit[segindex]=arr[ss];
+    return;
+    }
+    
+    ll mid=(ss+se)/2;
+    buildtree(bit,arr,2*segindex+1,ss,mid);
+    buildtree(bit,arr,2*segindex+2,mid+1,se);
+    bit[segindex]=bit[2*segindex+1]+bit[2*segindex+2];
+}
+
+int main(){
+    
+    ll n,i,j;
+    scan1(n);
+    ll a[n];
+    f(i,0,n-1)
+    scan1(a[i]);
+    //height of tree;
+    ll h=log2(n)+1;
+    ll bit[(1<<h)-1];
+    
+    buildtree(bit,a,0,0,n-1);
+    cout<<"sum is "<<sumofrange(bit,0,n-1,0,n-1,0)<<endl;
+    //updating index 1 with value 7.
+    updateutil(bit,0,n-1,0,1,7-a[1]);
+    a[1]=7;
+    cout<<"update sum is "<<sumofrange(bit,0,n-1,0,n-1,0)<<endl;
+    return 0;
+}
