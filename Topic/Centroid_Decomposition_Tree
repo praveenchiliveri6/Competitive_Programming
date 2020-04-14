@@ -1,0 +1,113 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+const int N = 200002;
+
+typedef pair<long long, long long> chi;
+vector <chi > g[N], qs[N];
+vector <long long> me, tot, nodes;
+int cnt[N], bc[N], ans[N];
+long long h[N];
+bool mark[N];
+
+int dfs(int v, bool c = 0, int par = -1, long long di = 0)
+{
+	h[v] = di;
+	cnt[v] = 1;
+	bc[v] = 0;
+	me.push_back(di);
+	nodes.push_back(v);
+	if(c)
+		tot.push_back(di);
+	for(int i = 0; i < g[v].size(); i++)
+	{
+		chi e = g[v][i];
+		int u = e.first;
+		if(u != par && !mark[u])
+		{
+			cnt[v] += dfs(u, c, v, di + e.second);
+			if(!bc[v] || cnt[bc[v]] < cnt[u])
+				bc[v] = u;
+		}
+	}
+	return cnt[v];
+}
+
+void solve(int v)
+{
+	//first dfs with random node.
+	dfs(v);
+	int n = cnt[v];
+
+	//updating the centroid here.
+	while(cnt[bc[v]] * 2 > n)
+		v = bc[v];
+
+
+	tot.clear();
+	
+	//To store all the distances to children from the centroid(root of this subtree).
+	dfs(v, 1);
+
+	//mark the centroid as visited.
+	mark[v] = 1;
+
+	sort(tot.begin(), tot.end());
+	for(int _i = 0; _i < qs[v].size(); _i++)
+	{
+		chi q = qs[v][_i];
+		long long w = q.first;
+		int i = q.second;
+		ans[i] += upper_bound(tot.begin(), tot.end(), w) - tot.begin() - 1;
+	}
+	for(int _i = 0; _i < g[v].size(); _i++)
+	{
+		chi e = g[v][_i];
+		if(!mark[e.first])
+		{
+			me.clear();
+			nodes.clear();
+			dfs(e.first, 0, v, e.second);
+			sort(me.begin(), me.end());
+			for(int j = 0; j < nodes.size(); j++)
+			{
+				int u = nodes[j];
+				for(int k = 0; k < qs[u].size(); k++)
+				{
+					chi q = qs[u][k];
+					long long w = q.first;
+					int i = q.second;
+					ans[i] += upper_bound(tot.begin(), tot.end(), w - h[u]) - tot.begin();
+					ans[i] -= upper_bound(me.begin(), me.end(), w - h[u]) - me.begin();
+				}
+			}
+		}
+	}
+	for(int i = 0; i < g[v].size(); i++)
+		if(!mark[g[v][i].first])
+			solve(g[v][i].first);
+	mark[v] = 0;
+}
+
+ main()
+{
+	ios::sync_with_stdio(0); cin.tie(0);
+	int n, q;
+	cin >> n >> q;
+	for(int i = 1; i < n; i++)
+	{
+		int u, v, w;
+		cin >> u >> v >> w;
+		g[u].push_back(chi(v, w));
+		g[v].push_back(chi(u, w));
+	}
+	for(int i = 0; i < q; i++)
+	{
+		long long v, w;
+		cin >> v >> w;
+		qs[v].push_back(make_pair(w, i));
+	}
+	solve(1);
+	for(int i = 0; i < q; i++)
+		cout << ans[i] + 1 << endl;
+}
