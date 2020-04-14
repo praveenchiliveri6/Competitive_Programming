@@ -1,0 +1,72 @@
+#include <bits/stdc++.h>
+#define f(i,a,b) for(i=a;i<=b;i++)
+#define rep(i,n) f(i,0,n)
+#define fd(i,a,b) for(i=a;i>=b;i--)
+#define pb push_back
+#define mp make_pair
+#define ss second
+#define ff first
+#define ll long long
+#define mod (1000*1000*1000+7)
+#define scan1(x) scanf("%lld",&x)
+#define scan2(x,y) scanf("%lld %lld",&x,&y)
+#define scan3(x,y,z) scanf("%lld %lld %lld",&x,&y,&z)
+#define scan4(x,y,z,w) scanf("%lld %lld %lld %lld",&x,&y,&z,&w)
+#define print(x) printf("%lld\n",x)
+#define ff first
+#define ss second
+using namespace std;
+
+int root(int Arr[ ],int i)
+{
+    while(Arr[ i ] != i)           //chase parent of current element until it reaches root.
+    {
+     i = Arr[ i ];
+    }
+    return i;
+}
+
+/*modified union function where we connect the elements by changing the root of one of the element */
+
+void wt_union(int Arr[ ],int size[ ],int A,int B)
+{
+    int root_A = root(Arr,A);
+    int root_B = root(Arr,B);
+    if(size[root_A] < size[root_B ])
+    {
+Arr[ root_A ] = Arr[root_B];
+size[root_B] += size[root_A];
+}
+    else
+    {
+Arr[ root_B ] = Arr[root_A];
+size[root_A] += size[root_B];
+}
+
+}
+bool find(int Arr[],int A,int B)
+{
+    if( root(Arr,A)==root(Arr,B) )       //if A and B have same root,means they are connected.
+    return true;
+    else
+    return false;
+}
+int main(){
+    ll n,m,j,sz,val;
+    int i;
+    scan2(n,m);
+    int Arr[n+1],size[n+1];
+    f(i,1,n) Arr[i]=i,size[i]=1;
+    f(i,1,m){
+        scan1(sz);
+        vector<ll> v;
+        f(j,1,sz)
+        scan1(val),v.pb(val);
+        f(j,0,sz-2)
+        if(!find(Arr,v[j],v[j+1]))
+        wt_union(Arr,size,v[j],v[j+1]);
+    }
+    f(i,1,n)
+    printf("%d ",size[root(Arr,i)]);
+    return 0;
+}
