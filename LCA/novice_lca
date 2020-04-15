@@ -1,0 +1,100 @@
+#include <bits/stdc++.h>
+#define f(i,a,b) for(i=a;i<=b;i++)
+#define rep(i,n) f(i,0,n)
+#define fd(i,a,b) for(i=a;i>=b;i--)
+#define pb push_back
+#define mp make_pair
+#define ss second
+#define ff first
+#define ll long long
+#define mod (1000*1000*1000+7)
+#define scan1(x) scanf("%lld",&x)
+#define scan2(x,y) scanf("%lld %lld",&x,&y)
+#define scan3(x,y,z) scanf("%lld %lld %lld",&x,&y,&z)
+#define print(x) printf("%lld\n",x)
+#define ff first
+#define ss second
+using namespace std;
+
+
+list<ll> adj[100001];
+ll level[100001],parent[100001];
+
+void dfs(ll src,ll par,ll curr_level){
+    
+    level[src]=curr_level;
+    parent[src]=par;
+    
+    for(auto child:adj[src])
+    if(child!=par)
+    dfs(child,src,curr_level+1);
+    
+}
+
+
+ll lca(ll u,ll v){
+    
+    //if node u level is smaller than node v level, swap u and v.
+    if(level[u]<level[v])
+    swap(u,v);
+    
+    ll level_diff=level[u]-level[v];
+    
+    // make two nodes levels equal.
+    while(level_diff--)
+    u=parent[u];
+    
+    //if both nodes are equal at equal levels, then lca is found.
+    if(u==v) 
+    return u;
+    
+    // go up until two parents are not same.
+    while(parent[u]!=parent[v])
+    u=parent[u],v=parent[v];
+    
+    return parent[u];
+
+}
+
+void clear(ll n){
+    ll i;
+    f(i,1,n)
+    {
+        adj[i].clear();
+        parent[i]=0;
+        level[i]=0;
+    }
+}
+
+int main(){
+    ll t,n,u,v,i,j,q;
+    scan1(t);
+    while(t--){
+        //number of nodes in the graph.
+        scan1(n);
+        
+        // To clear the adjacency list,parent array and level array.
+        clear(n);
+        
+        
+        // n-1 edges in this tree.
+        f(i,1,n-1)
+        scan2(u,v),adj[u].pb(v),adj[v].pb(u);
+        
+        // dfs to get the node levels and parents of all nodes.
+        dfs(1,-1,0);
+        
+        // queries to find the lca of two nodes.
+        scan1(q);
+        
+        while(q--){
+            
+            //two nodes for which lca has to be found.
+            scan2(u,v);
+            cout<<lca(u,v)<<"\n";
+        }
+        
+    }
+    
+    return 0;
+}
