@@ -1,0 +1,122 @@
+#include <bits/stdc++.h>
+#define f(i,a,b) for(i=a;i<=b;i++)
+#define rep(i,n) f(i,0,n)
+#define fd(i,a,b) for(i=a;i>=b;i--)
+#define pb push_back
+#define mp make_pair
+#define ss second
+#define ff first
+#define ll long long
+#define mod (1000*1000*1000+7)
+#define scan1(x) scanf("%lld",&x)
+#define scan2(x,y) scanf("%lld %lld",&x,&y)
+#define scan3(x,y,z) scanf("%lld %lld %lld",&x,&y,&z)
+#define print(x) printf("%lld\n",x)
+#define ff first
+#define ss second
+using namespace std;
+
+
+list<ll> adj[100001];
+
+//log2(100001)~ 20
+ll LCA[100001][22],level[100001]; // it will store the 2^jth parent of i.initialize it with -1 at the beginning.
+
+void dfs(ll src,ll par,ll cur_level){
+    
+    //2^0th parent of src will be updated.
+    LCA[src][0]=par;
+    level[src]=cur_level;
+    
+    for(auto child:adj[src])
+    if(child!=par)
+    dfs(child,src,cur_level+1);
+    
+}
+
+
+ll lca(ll u,ll v){
+    
+    //if node u level is smaller than node v level, swap u and v.
+    if(level[u]<level[v])
+    swap(u,v);
+    
+    ll level_diff=level[u]-level[v];
+    
+    // make two nodes levels equal using binary lifting.
+    while(level_diff>0){
+        ll i=log2(level_diff); // get the highest power of 2 less than level_diff.
+        u=LCA[u][i];
+        level_diff-=(1<<i); //update the value of level_diff.
+    }
+    
+    //if both nodes are equal at equal levels, then lca is found.
+    if(u==v) 
+    return u;
+    
+    //Go through all the 2^jth powers of u. 
+    //if parent exist then check that parent of u is not same as parent of v. 
+    //if so , update u and v to the respective parents.
+    ll i;
+    fd(i,21,0)
+    if(LCA[u][i]!=-1&&(LCA[u][i]!=LCA[v][i])){
+        u=LCA[u][i];
+        v=LCA[v][i];
+    }
+    
+    //return the parent of u or v.
+    return LCA[u][0];
+
+}
+
+void clear(ll n){
+    ll i,j;
+    f(i,1,n)
+    {
+        adj[i].clear();
+        level[i]=0;
+        f(j,0,21)
+        LCA[i][j]=-1;
+    }
+}
+
+int main(){
+    ll t,n,u,v,i,j,q;
+    scan1(t);
+    while(t--){
+        //number of nodes in the graph.
+        scan1(n);
+        
+        // To clear the adjacency list,parent array and level array.
+        clear(n);
+        
+        
+        // n-1 edges in this tree.
+        f(i,1,n-1)
+        scan2(u,v),adj[u].pb(v),adj[v].pb(u);
+        
+        //dfs to get the 2^0th parent of all nodes.
+        dfs(1,-1,0);
+        
+        //update the 2th power parents of all nodes using the 2^0th parent information.
+        f(i,1,21)
+        f(j,1,n)
+        if(LCA[j][i-1]!=-1){
+            ll par=LCA[j][i-1]; // get the 2^(i-1)th parent of jth node.
+            LCA[j][i]=LCA[par][i-1]; // 2^ith parent of jth node is 2^{i-1)th parent of par.
+        }
+        
+        // queries to find the lca of two nodes.
+        scan1(q);
+        
+        while(q--){
+            
+            //two nodes for which lca has to be found.
+            scan2(u,v);
+            cout<<lca(u,v)<<"\n";
+        }
+        
+    }
+    
+    return 0;
+}
