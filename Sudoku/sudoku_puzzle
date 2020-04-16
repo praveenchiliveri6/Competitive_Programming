@@ -1,0 +1,142 @@
+#include <bits/stdc++.h>
+#define f(i,a,b) for(i=a;i<=b;i++)
+#define rep(i,n) f(i,0,n)
+#define fd(i,a,b) for(i=a;i>=b;i--)
+#define pb push_back
+#define mp make_pair
+#define ss second
+#define ff first
+#define ll long long
+#define mod (1000*1000*1000+7)
+#define scan1(x) scanf("%lld",&x)
+#define scan2(x,y) scanf("%lld %lld",&x,&y)
+#define scan3(x,y,z) scanf("%lld %lld %lld",&x,&y,&z)
+#define print(x) printf("%lld\n",x)
+#define ff first
+#define ss second
+using namespace std;
+
+ll arr[9][9];
+
+// checks the row for the number.
+bool checkrow(ll r, ll number){
+    ll i,j;
+    f(j,0,8)
+    if(arr[r][j]==number)
+    return false;
+    
+    return true;
+}
+
+
+// checks the column for the number.
+bool checkcolumn(ll c,ll number){
+    ll i,j;
+    f(i,0,8)
+    if(arr[i][c]==number)
+    return false;
+    
+    return true;
+}
+
+//checks the 3x3 grid for the number.
+bool checksmallgrid(ll r,ll c,ll number){
+    ll i,j;
+    
+    r=r-r%3;
+    c=c-c%3;
+    
+    f(i,0,2)
+    f(j,0,2)
+    if(arr[i+r][j+c]==number)
+    return false;
+    
+    return true;
+}
+
+
+// checks the row, column and 3x3 grid for the number to know whether that number can be placed or not.
+
+bool canplace(ll r,ll c,ll number){
+
+    if(arr[r][c])
+    return false;
+    
+    bool f1=checkrow(r,number);
+    bool f2=checkcolumn(c,number);
+    bool f3=checksmallgrid(r,c,number);
+    
+    
+    return (f1&&f2&&f3);
+    
+}
+
+// points the r1,c1 to next unassigned position.
+
+bool findnextunassignedcell(ll &r1,ll &c1){
+    
+    ll i,j;
+    f(i,0,8)
+    f(j,0,8)
+    if(arr[i][j]==0){
+        r1=i;
+        c1=j;
+        return true;
+    }
+    
+    
+    return false;
+}
+
+
+
+bool solve(){
+    
+    ll i,r1,c1;
+    
+    //if we cannot find the next unassigned cell, grid is solved. 
+    if(!findnextunassignedcell(r1,c1))
+    return true;
+    
+    
+    f(i,1,9)
+    if(canplace(r1,c1,i)){
+        arr[r1][c1]=i;    // assign the number which can be placed in (r1,c1) position.
+        
+        if(solve())
+        return true;
+        
+        arr[r1][c1]=0;
+    }
+    
+    return false;    // if none of the number can be placed in the (r1,c1) position.
+}
+
+
+
+int main(){
+    ll i,j;
+    string s[9];
+    f(i,0,8)
+    cin>>s[i];
+    
+    
+    f(i,0,8)
+    f(j,0,8)
+    arr[i][j]=s[i][j]-'0';
+    
+    
+    bool flag=solve();
+    
+    if(!flag)
+    cout<<"Cannot be solved\n";
+    else{
+        f(i,0,8){
+            f(j,0,8)
+            cout<<arr[i][j]<<" ";
+            cout<<endl;
+        }
+    }
+    
+    return 0;
+}
