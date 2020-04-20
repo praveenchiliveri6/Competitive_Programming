@@ -1,0 +1,78 @@
+
+//Dijikstra's Algorithm to find the shortest distance to all the nodes from the given node.
+
+
+#include <bits/stdc++.h>
+#define f(i,a,b) for(i=a;i<=b;i++)
+#define rep(i,n) f(i,0,n)
+#define fd(i,a,b) for(i=a;i>=b;i--)
+#define pb push_back
+#define mp make_pair
+#define ss second
+#define ff first
+#define ll long long
+#define mod (1000*1000*1000+7)
+#define scan1(x) scanf("%lld",&x)
+#define scan2(x,y) scanf("%lld %lld",&x,&y)
+#define scan3(x,y,z) scanf("%lld %lld %lld",&x,&y,&z)
+#define print(x) printf("%lld\n",x)
+#define ff first
+#define ss second
+using namespace std;
+
+ll n,m,i,j,u,w,v;
+
+void Dijikstra(ll src,list<pair<ll,ll>> *adj){
+    
+    // first element of pair is distance and the second element is the node.
+    // it represents the distance to reach the present node from the source node.
+    priority_queue<pair<ll,ll>,vector<pair<ll,ll>>,greater<pair<ll,ll>>> pq;
+    
+    //initially , The distance to reach src from src is 0.
+    pq.push(mp(0,src));
+    vector<ll> dist(n+1,INT_MAX);
+    
+    dist[src]=0;
+    while(!pq.empty()){
+        pair<ll,ll> p=pq.top();
+        
+        pq.pop();
+        ll u=p.second;
+        
+        for(auto it:adj[u]){
+            ll v=it.first;
+            ll weight=it.second;
+            
+            if(dist[v]>dist[u]+weight){
+                dist[v]=dist[u]+weight;
+                pq.push(mp(dist[v],v));
+            }
+        }
+    }
+    
+    cout<<"Distance to all the nodes from "<<src<<"  is\n";
+    f(i,1,n)
+    cout<<dist[i]<<" to node "<<i<<"\n";
+    
+}
+
+
+int main(){
+    
+    //n nodes and m edges in the graph.
+    
+    scan2(n,m);
+    
+    list<pair<ll,ll>> adj[n+1];
+    
+    f(i,1,m){
+        scan3(u,v,w);
+        adj[u].pb(mp(v,w));
+        adj[v].pb(mp(u,w));
+    }
+    
+    Dijikstra(1,adj);
+    
+    
+    return 0;
+}
