@@ -1,0 +1,94 @@
+
+//Strongly Connected Components in a directed graph with n nodes and m edges.
+
+
+#include <bits/stdc++.h>
+#define f(i,a,b) for(i=a;i<=b;i++)
+#define rep(i,n) f(i,0,n)
+#define fd(i,a,b) for(i=a;i>=b;i--)
+#define pb push_back
+#define mp make_pair
+#define ss second
+#define ff first
+#define ll long long
+#define mod (1000*1000*1000+7)
+#define scan1(x) scanf("%lld",&x)
+#define scan2(x,y) scanf("%lld %lld",&x,&y)
+#define scan3(x,y,z) scanf("%lld %lld %lld",&x,&y,&z)
+#define print(x) printf("%lld\n",x)
+#define ff first
+#define ss second
+using namespace std;
+
+//To store the nodes with ending time in sorted order.
+stack<ll> st;
+
+
+void dfs(ll u, bool *visited,list<ll> *adj){
+    visited[u]=true;
+    
+    for(auto x:adj[u])
+    if(!visited[x])
+    dfs(x,visited,adj);
+    
+    st.push(u);
+    
+}
+
+
+void dfs1(ll u,bool *visited,list<ll> *adj){
+    visited[u]=true;
+    cout<<u<<" ";
+    
+    for(auto x:adj[u])
+    if(!visited[x])
+    dfs1(x,visited,adj);
+}
+
+
+int main(){
+    
+    //n nodes and m edges in the graph.
+    ll n,m,i,j,u,v;
+    scan2(n,m);
+    
+    list<ll> adj[n+1];
+    
+    f(i,1,m){
+        scan2(u,v);
+        adj[u].pb(v);
+    }
+    
+    bool visited[n+1];
+    memset(visited,false,sizeof(visited));
+    
+    
+    f(i,1,n)
+    if(!visited[i])
+    dfs(i,visited,adj);
+    
+    memset(visited,false,sizeof(visited));
+    
+    //To store the transpose of the current adjacent list.
+    list<ll> tadj[n+1];
+    
+    f(i,1,n)
+    for(auto it:adj[i])
+    tadj[it].pb(i);
+    
+    
+    // Do the dfs for the transposed adjacency list from the top of stack.
+    while(!st.empty()){
+        ll u=st.top();
+        st.pop();
+        if(!visited[u]){
+            cout<<"Strongly connected component is : \n";
+            dfs1(u,visited,tadj);
+            cout<<endl;
+        }
+        
+    }
+    
+    
+    return 0;
+}
