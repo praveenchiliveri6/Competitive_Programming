@@ -1,0 +1,91 @@
+
+//Bellman Ford Algorithm to find minimum distance to all the nodes from the source node.
+// Here the weights can be negative also.
+
+
+
+#include <bits/stdc++.h>
+#define f(i,a,b) for(i=a;i<=b;i++)
+#define rep(i,n) f(i,0,n)
+#define fd(i,a,b) for(i=a;i>=b;i--)
+#define pb push_back
+#define mp make_pair
+#define ss second
+#define ff first
+#define ll long long
+#define mod (1000*1000*1000+7)
+#define scan1(x) scanf("%lld",&x)
+#define scan2(x,y) scanf("%lld %lld",&x,&y)
+#define scan3(x,y,z) scanf("%lld %lld %lld",&x,&y,&z)
+#define print(x) printf("%lld\n",x)
+#define ff first
+#define ss second
+using namespace std;
+
+ll n,m,i,j,u,w,v;
+
+vector<pair<ll,pair<ll,ll>>> edges;
+
+void BellmanFord(ll src){
+    
+    vector<ll> dist(n+1,INT_MAX);
+    dist[src]=0;
+    
+    // Relax all the nodes n-1 times to reach the optimal distances to all the nodes.
+    f(i,1,n-1)
+    f(j,1,m){
+        
+        ll weight=edges[j-1].first;
+        ll u=edges[j-1].second.first;
+        ll v=edges[j-1].second.second;
+        
+        // Relaxation step.
+        if(dist[u]!=INT_MAX && dist[v]>dist[u]+weight)
+        dist[v]=dist[u]+weight;
+        
+    }
+    
+    // Do the relaxation one more time for all the edges.
+    // Even if we do the relaxation one more time, there should not be any change in the distances.Since we got the minimum distances to all the nodes from source after relaxing n-1 times. 
+    // if we encounter a change in the Distance again, then we can conclude that the graph contains a negative edge cycle(sum of weights of a cycle is negative).
+    // There is no solution for a graph with negative edge cycles.
+    
+    f(i,1,m){
+        ll weight=edges[j-1].first;
+        ll u=edges[j-1].second.first;
+        ll v=edges[j-1].second.second;
+        
+        // Relaxation step.
+        if(dist[u]!=INT_MAX && dist[v]>dist[u]+weight)
+        {
+            cout<<"Negative Weight Cycle is Present\n";
+            return ;
+        }
+    }
+    
+    
+    cout<<"Distance to all the nodes from "<<src<<"  is\n";
+    f(i,1,n)
+    cout<<dist[i]<<" to node "<<i<<"\n";
+    
+}
+
+
+int main(){
+    
+    //n nodes and m edges in the graph.
+    
+    scan2(n,m);
+    
+    list<pair<ll,ll>> adj[n+1];
+    
+    f(i,1,m){
+        scan3(u,v,w);
+        edges.pb(mp(w,mp(u,v)));
+    }
+    
+    BellmanFord(1);
+    
+    
+    return 0;
+}
