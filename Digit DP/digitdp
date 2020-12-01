@@ -1,0 +1,42 @@
+Nobita's teacher gave him some problems to solve.
+
+He has to solve q queries. He is given a list A of strings. List A contains numbers in string format. The ith query consists of numbers A[2*i] and A[2*i+1]. The answer to ith query is the count from A[2*i] to A[2*i+1] whose decimal representation contains no more than 3 non-zero digits. Since the answer can be large, return it modulo 109 + 7.
+
+Can you help him?
+
+// calculate answer for range 1 to r and subtract 1 to l-1, which will give the answer for range l to r;
+
+
+int mod=1000000007;
+int dp[20][2][4];  // states are position of number, are we free to place any number or not, non zero digits count.
+string v;
+int digitdp(int pos,int size,bool flag,int nonzero){
+    if(nonzero>3)
+    return 0;
+    
+    if(pos==size){
+        return nonzero>0&&nonzero<=3;
+    }
+    
+    if(dp[pos][flag][nonzero]!=-1)
+    return dp[pos][flag][nonzero];
+    
+    int lim=(flag==true)?9:v[pos]-'0';
+    int ans=0;
+    for(int i=0;i<=lim;i++){
+        bool flag1=(i<v[pos]-'0')?1:flag;
+        ans=(ans+digitdp(pos+1,size,flag1,nonzero+(i!=0)))%mod;
+    }
+    return dp[pos][flag][nonzero]=ans;
+}
+
+
+
+int solve(String value){
+    for(int i=0;i<20;i++)
+    for(int j=0;j<2;j++)
+    for(int k=0;k<4;k++)
+    dp[i][j][k]=-1;
+    
+    return digitdp(0,value.size(),false,0);
+    }
