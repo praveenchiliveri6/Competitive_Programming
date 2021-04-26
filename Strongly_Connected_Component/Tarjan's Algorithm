@@ -1,0 +1,56 @@
+
+discovery-> discovery time of the node in the dfs traversal
+low -> lowest discovery time of ancestor that's already visited
+
+class Solution {
+public:
+    vector<int> adj[100001];
+    int discovery[100001],low[100001];
+    bool visited[100001];
+    int time=0;
+    vector<vector<int>> bridges;
+    
+    void dfs(int src,int par){
+        
+        visited[src]=true;
+        discovery[src]=low[src]=time++;
+        
+        for(auto child:adj[src])
+             # if the child is not visited
+            if(!visited[child]){
+                dfs(child,src);
+                
+                low[src]=min(low[src],low[child]);
+                if(low[child]>discovery[src])
+                    bridges.push_back({src,child});
+                
+            }
+            #if the child is visited and child is not the parent of the src, store the minimum of the discovery time of child and low[src] in low[src].
+            else if(child!=par)
+                low[src]=min(low[src],discovery[child]);
+        
+    }
+    
+    vector<vector<int>> criticalConnections(int n, vector<vector<int>>& connections) {
+        
+        time=0;
+        bridges.clear();
+        for(auto x:connections)
+            adj[x[0]].push_back(x[1]),adj[x[1]].push_back(x[0]);
+        
+        for(int i=1;i<=n;i++)
+            if(!visited[i])
+                dfs(i,-1);
+        
+        for(int i=1;i<=n;i++){
+            adj[i].clear();
+            discovery[i]=0;
+            low[i]=0;
+            visited[i]=false;
+        }
+        
+        
+        return bridges;
+        
+    }
+};
